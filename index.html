@@ -258,47 +258,53 @@ html,body{
 /* ════════ MOBILE ≤ 600px ════════ */
 
 @media(max-width:600px){
-  .nav-arrow{width:40px;height:40px;font-size:16px;}
-  #bP{left:6px;}
-  #bN{right:6px;}
-  #nav{bottom:10px;padding:6px 10px;gap:5px;}
-  .nd{padding:4px;}
-}
-@media(max-width:600px){
-  #nav{bottom:10px;padding:6px 10px;gap:5px;}
-  .na{width:34px;height:34px;font-size:13px;}
-  .nd{padding:3px;}
+  /* Safe area — notch / home bar iOS */
+  #progress{top:env(safe-area-inset-top,0px);}
+  #nav{bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px 10px;gap:5px;}
+  #bP{left:8px;}
+  #bN{right:8px;}
+
+  /* Nav arrows — 48px touch target */
+  .nav-arrow{width:48px;height:48px;font-size:18px;}
+
+  /* Dots — 5px padding = 17px hit area mínimo */
+  .nd{padding:5px;}
   .nctr{font-size:9px;min-width:28px;}
 
   /* S1 */
   .s1-badges{display:none;}
 
-  /* S2 — stack */
-  #s2 .wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr;}
-  #s2 .left{padding:18px 20px;gap:8px;min-height:0;}
-  #s2 .right{padding:10px 16px;gap:5px;justify-content:flex-start;overflow-y:auto;}
+  /* S2 — stack vertical; right scroll internamente */
+  #s2 .wrap{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:hidden;}
+  #s2 .left{padding:14px 16px;gap:8px;min-height:0;}
+  #s2 .right{padding:10px 14px;gap:5px;justify-content:flex-start;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   #s2 .fr{padding:8px 10px;}
 
   /* S3 — 2 cols */
-  #s3 .inner{padding:16px;}
+  #s3 .inner{padding:14px 14px;gap:10px;}
   #s3 .grid{grid-template-columns:repeat(2,1fr);}
   #s3 .nc-desc{font-size:10px;}
 
-  /* S4 — stack */
-  #s4 .inner{padding:16px 16px 20px;}
-  #s4 .screens{grid-template-columns:1fr;overflow-y:auto;}
+  /* S4 — col única; inner scroll com inércia */
+  #s4 .inner{padding:14px 14px 16px;justify-content:flex-start;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  #s4 .screens{grid-template-columns:1fr;}
 
-  /* S5 — stack */
-  #s5 .inner{padding:14px 14px 18px;}
-  #s5 .screens{grid-template-columns:1fr;overflow-y:auto;}
+  /* S5 — col única; inner scroll com inércia */
+  #s5 .inner{padding:12px 12px 16px;justify-content:flex-start;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  #s5 .screens{grid-template-columns:1fr;}
 
-  /* S6 — stack */
-  #s6 .wrap{padding:16px;}
-  #s6 .planos{grid-template-columns:1fr;overflow-y:auto;}
+  /* S6 — col única; wrap scroll */
+  #s6 .wrap{padding:14px 14px;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  #s6 .planos{grid-template-columns:1fr;flex:none;overflow:visible;}
 
-  /* S7 */
-  #s7 .inner{padding:20px 16px 16px;}
+  /* S7 — safe-area no padding inferior */
+  #s7 .inner{padding:20px 16px calc(16px + env(safe-area-inset-bottom,0px));}
   #s7 .contacts{flex-direction:column;gap:4px;}
+}
+
+/* ════════ REDUCED MOTION ════════ */
+@media(prefers-reduced-motion:reduce){
+  .slide,.nav-arrow,.nd,#progress{transition:none !important;animation:none !important;}
 }
 </style>
 </head>
@@ -521,16 +527,30 @@ document.addEventListener('keydown', function(e) {
 // ─── TOUCH SWIPE ──────────────────────────────
 var touchStartX = 0;
 var touchStartY = 0;
+var swipeTarget = null;
+
+function isScrollable(el) {
+  while (el && el !== document.body) {
+    var style = window.getComputedStyle(el);
+    var oy = style.overflowY;
+    if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) return true;
+    el = el.parentElement;
+  }
+  return false;
+}
 
 document.addEventListener('touchstart', function(e) {
   touchStartX = e.changedTouches[0].screenX;
   touchStartY = e.changedTouches[0].screenY;
+  swipeTarget = e.target;
 }, false);
 
 document.addEventListener('touchend', function(e) {
   var dx = e.changedTouches[0].screenX - touchStartX;
   var dy = e.changedTouches[0].screenY - touchStartY;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+  if (Math.abs(dy) > Math.abs(dx)) return;
+  if (Math.abs(dx) > 40) {
+    if (isScrollable(swipeTarget)) return;
     if (dx < 0) {
       goTo(cur + 1);
     } else {
