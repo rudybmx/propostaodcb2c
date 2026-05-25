@@ -58,25 +58,20 @@ html,body{
   pointer-events:none;
 }
 
-/* ── NAV ARROWS — fixed sides ── */
-.nav-arrow{
-  position:fixed;top:50%;transform:translateY(-50%);
-  z-index:9999;
-  width:44px;height:44px;border-radius:50%;
-  border:1px solid rgba(255,255,255,.2);
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(10px);
-  color:#fff;font-size:18px;
+/* ── TAP ZONES — Instagram-style ── */
+.tap-zone{
+  position:fixed;top:0;height:100%;
+  z-index:9000;
+  width:30%;
   cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  outline:none;
+  -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
   user-select:none;-webkit-user-select:none;
-  transition:background .15s,transform .15s;
+  background:transparent;
+  border:none;outline:none;
 }
-.nav-arrow:active{background:rgba(0,0,0,.8);transform:translateY(-50%) scale(.93);}
-#bP{left:12px;}
-#bN{right:12px;}
+#bP{left:0;}
+#bN{right:0;}
 
 /* ── NAV DOTS — bottom center ── */
 #nav{
@@ -261,11 +256,8 @@ html,body{
   /* Safe area — notch / home bar iOS */
   #progress{top:env(safe-area-inset-top,0px);}
   #nav{bottom:calc(10px + env(safe-area-inset-bottom,0px));padding:6px 10px;gap:5px;}
-  #bP{left:8px;}
-  #bN{right:8px;}
-
-  /* Nav arrows — 48px touch target */
-  .nav-arrow{width:48px;height:48px;font-size:18px;}
+  /* tap zones — full height no mobile */
+  .tap-zone{width:35%;}
 
   /* Dots — 5px padding = 17px hit area mínimo */
   .nd{padding:5px;}
@@ -304,7 +296,7 @@ html,body{
 
 /* ════════ REDUCED MOTION ════════ */
 @media(prefers-reduced-motion:reduce){
-  .slide,.nav-arrow,.nd,#progress{transition:none !important;animation:none !important;}
+  .slide,.nd,#progress{transition:none !important;animation:none !important;}
 }
 </style>
 </head>
@@ -473,8 +465,8 @@ html,body{
 </div><!-- /deck -->
 
 <!-- NAV ARROWS -->
-<button class="nav-arrow" id="bP" aria-label="Anterior">&#8592;</button>
-<button class="nav-arrow" id="bN" aria-label="Pr&oacute;ximo">&#8594;</button>
+<button class="tap-zone" id="bP" aria-label="Anterior"></button>
+<button class="tap-zone" id="bN" aria-label="Pr&oacute;ximo"></button>
 
 <!-- NAV DOTS -->
 <div id="nav">
